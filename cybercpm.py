@@ -195,39 +195,3 @@ class Emritz:
                     json.dump(car_data, f, indent=4, ensure_ascii=False)
             return datacar
         return None
-
-    def save_player_slots_collection(self) -> bool:
-        car_instance_ids = []
-        folder_path = "dataplayer/cars"
-    
-        for filename in os.listdir(folder_path):
-            name, ext = os.path.splitext(filename)
-            if name.isdigit():
-                file_path = os.path.join(folder_path, filename)
-                try:
-                    with open(file_path, "r", encoding="utf-8") as file:
-                        content = json.load(file)
-                        car_instance_id = content.get("data", {}).get("CarInstanceId")
-                        if car_instance_id:
-                            car_instance_ids.append(car_instance_id)
-                except:
-                    continue
-    
-        if not car_instance_ids:
-            return False
-    
-        car_dict = {str(i): cid for i, cid in enumerate(car_instance_ids)}
-        data_json_str = json.dumps(car_dict, ensure_ascii=False)
-        url = f"{BASE_URL}/save_slots_collection"
-        params = {"key": self.access_key}
-        payload = {
-            "account_auth": self.auth_token,
-            "data": data_json_str
-        }
-    
-        try:
-            response = requests.post(url, params=params, json=payload)
-            result = response.json()
-            return result.get("ok", False)
-        except:
-            return False
